@@ -22,10 +22,10 @@ A simple, accessible note-taking app designed for elderly users.
 ## Screenshots & Test Results
 
 ### Notes List
-![Notes List](docs/screenshots/notes-list.png)
+<img src="docs/screenshots/notes-list.png" width="300" alt="Notes List" />
 
 ### Create/Edit Note
-![New Note](docs/screenshots/create-note.png)
+<img src="docs/screenshots/create-note.png" width="300" alt="Create Note" />
 
 ### Test Results
 
