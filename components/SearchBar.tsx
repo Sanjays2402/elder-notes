@@ -1,5 +1,6 @@
 import React from "react";
 import { View, TextInput, StyleSheet } from "react-native";
+import { useSettings } from "../lib/settings";
 
 interface Props {
   value: string;
@@ -7,12 +8,21 @@ interface Props {
 }
 
 export default function SearchBar({ value, onChangeText }: Props) {
+  const { theme, fontScale } = useSettings();
+
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            backgroundColor: theme.inputBg,
+            color: theme.text,
+            fontSize: 20 * fontScale,
+          },
+        ]}
         placeholder="🔍  Search notes..."
-        placeholderTextColor="#999999"
+        placeholderTextColor={theme.textMuted}
         value={value}
         onChangeText={onChangeText}
         autoCorrect={false}
@@ -27,11 +37,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   input: {
-    backgroundColor: "#F0F0F0",
     borderRadius: 14,
     paddingHorizontal: 20,
     paddingVertical: 16,
-    fontSize: 20,
-    color: "#1A1A1A",
   },
 });

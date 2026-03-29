@@ -1,11 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+export type NoteColor = "none" | "red" | "blue" | "green" | "yellow" | "purple";
+
 export interface Note {
   id: string;
   title: string;
   body: string;
   createdAt: number;
   updatedAt: number;
+  color: NoteColor;
+  pinned: boolean;
 }
 
 const NOTES_KEY = "elder_notes";
@@ -17,7 +21,17 @@ export async function getAllNotes(): Promise<Note[]> {
   const raw = await AsyncStorage.getItem(NOTES_KEY);
   if (!raw) return [];
   const notes: Note[] = JSON.parse(raw);
-  return notes.sort((a, b) => b.updatedAt - a.updatedAt);
+  // Migrate old notes missing new fields
+  const migrated = notes.map((n) => ({
+    ...n,
+    color: n.color ?? "none",
+    pinned: n.pinned ?? false,
+  }));
+  // Sort: pinned first, then by updatedAt descending
+  return migrated.sort((a, b) => {
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+    return b.updatedAt - a.updatedAt;
+  });
 }
 
 export async function getNote(id: string): Promise<Note | undefined> {
@@ -28,7 +42,9 @@ export async function getNote(id: string): Promise<Note | undefined> {
 export async function saveNote(
   title: string,
   body: string,
-  existingId?: string
+  existingId?: string,
+  color: NoteColor = "none",
+  pinned: boolean = false
 ): Promise<Note> {
   const notes = await getAllNotes();
   const now = Date.now();
@@ -36,7 +52,7 @@ export async function saveNote(
   if (existingId) {
     const idx = notes.findIndex((n) => n.id === existingId);
     if (idx !== -1) {
-      notes[idx] = { ...notes[idx], title, body, updatedAt: now };
+      notes[idx] = { ...notes[idx], title, body, color, pinned, updatedAt: now };
       await AsyncStorage.setItem(NOTES_KEY, JSON.stringify(notes));
       return notes[idx];
     }
@@ -48,6 +64,8 @@ export async function saveNote(
     body,
     createdAt: now,
     updatedAt: now,
+    color,
+    pinned,
   };
   notes.push(note);
   await AsyncStorage.setItem(NOTES_KEY, JSON.stringify(notes));

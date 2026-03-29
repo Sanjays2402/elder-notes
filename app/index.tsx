@@ -9,13 +9,14 @@ import {
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Note, getAllNotes, searchNotes } from "../lib/storage";
+import { useSettings } from "../lib/settings";
 import NoteCard from "../components/NoteCard";
 import SearchBar from "../components/SearchBar";
-
-export { unstable_settings } from "expo-router";
+import { Stack } from "expo-router";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { theme, fontScale } = useSettings();
   const [notes, setNotes] = useState<Note[]>([]);
   const [search, setSearch] = useState("");
 
@@ -42,51 +43,95 @@ export default function HomeScreen() {
     router.push("/note");
   };
 
+  const handleSettings = () => {
+    router.push("/settings");
+  };
+
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <>
+      <Stack.Screen
+        options={{
+          title: "My Notes",
+          headerRight: () => (
+            <View style={styles.headerRight}>
+              <View style={[styles.badge, { backgroundColor: theme.bg }]}>
+                <Text style={[styles.badgeText, { color: theme.text, fontSize: 16 * fontScale }]}>
+                  {notes.length}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={handleSettings} style={styles.settingsBtn}>
+                <Text style={styles.settingsIcon}>⚙️</Text>
+              </TouchableOpacity>
+            </View>
+          ),
+        }}
+      />
+      <View style={[styles.container, { backgroundColor: theme.bg }]}>
+        <StatusBar barStyle={theme.statusBar} />
 
-      <SearchBar value={search} onChangeText={handleSearch} />
+        <SearchBar value={search} onChangeText={handleSearch} />
 
-      {notes.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>📝</Text>
-          <Text style={styles.emptyText}>
-            {search ? "No notes found" : "No notes yet"}
-          </Text>
-          <Text style={styles.emptyHint}>
-            {search ? "Try a different search" : "Tap the + button to create one"}
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={notes}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <NoteCard note={item} onPress={handleNotePress} />
-          )}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.list}
-        />
-      )}
+        {notes.length === 0 ? (
+          <View style={styles.empty}>
+            <Text style={styles.emptyIcon}>📝</Text>
+            <Text style={[styles.emptyText, { color: theme.textSecondary, fontSize: 24 * fontScale }]}>
+              {search ? "No notes found" : "No notes yet"}
+            </Text>
+            <Text style={[styles.emptyHint, { color: theme.textMuted, fontSize: 18 * fontScale }]}>
+              {search ? "Try a different search" : "Tap the + button to create one"}
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={notes}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <NoteCard note={item} onPress={handleNotePress} />
+            )}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.list}
+          />
+        )}
 
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={handleNewNote}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity
+          style={[styles.fab, { backgroundColor: theme.primary }]}
+          onPress={handleNewNote}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
     paddingHorizontal: 20,
     paddingTop: 16,
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  badge: {
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    minWidth: 32,
+    alignItems: "center",
+  },
+  badgeText: {
+    fontWeight: "700",
+  },
+  settingsBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  settingsIcon: {
+    fontSize: 24,
   },
   list: {
     paddingBottom: 100,
@@ -102,15 +147,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   emptyText: {
-    fontSize: 24,
     fontWeight: "600",
-    color: "#555555",
     marginBottom: 8,
   },
-  emptyHint: {
-    fontSize: 18,
-    color: "#999999",
-  },
+  emptyHint: {},
   fab: {
     position: "absolute",
     right: 24,
@@ -118,7 +158,6 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: "#4A90D9",
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",

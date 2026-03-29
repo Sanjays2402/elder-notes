@@ -10,12 +10,19 @@ A simple, accessible note-taking app designed for elderly users.
 - ✅ Large fonts and big tap targets
 - ✅ High contrast, clean design
 - ✅ No account needed — all data stored locally
+- ✅ **Dark Mode** — Toggle dark/light mode in Settings, persisted across sessions
+- ✅ **Note Colors** — Color-label notes (red, blue, green, yellow, purple) with a colored strip on each card
+- ✅ **Pin Notes** — Pin important notes to the top of the list
+- ✅ **Font Size Control** — Choose Small / Medium / Large / Extra Large in Settings
+- ✅ **Haptic Feedback** — Tactile confirmation when saving or deleting notes
+- ✅ **Note Count Badge** — Total note count displayed in the home screen header
+- ✅ **Relative Timestamps** — "Edited 2 hours ago" style timestamps on note cards
 
 ## Design Principles
 
-- 🔤 Large fonts (18-28px)
+- 🔤 Large fonts (18-28px, adjustable)
 - 🎯 Big tap targets (48px+ buttons)
-- 🎨 High contrast colors
+- 🎨 High contrast colors in both light and dark mode
 - 📱 Minimal UI — no clutter
 - 🧓 No swipe gestures — only taps
 
@@ -64,20 +71,24 @@ Then scan the QR code with Expo Go on your phone, or press:
 - TypeScript
 - AsyncStorage (local storage)
 - Expo Router (file-based navigation)
+- Expo Haptics (tactile feedback)
 
 ## Project Structure
 
 ```
 elder-notes/
 ├── app/
-│   ├── _layout.tsx      # Navigation layout
-│   ├── index.tsx        # Home screen (note list + search)
-│   └── note.tsx         # Create/Edit note screen
+│   ├── _layout.tsx      # Navigation layout with SettingsProvider
+│   ├── index.tsx        # Home screen (note list + search + note count)
+│   ├── note.tsx         # Create/Edit note screen (color picker, pin toggle)
+│   └── settings.tsx     # Settings screen (dark mode, font size)
 ├── components/
-│   ├── NoteCard.tsx     # Note card component
+│   ├── NoteCard.tsx     # Note card with color strip, pin icon, relative time
 │   └── SearchBar.tsx    # Search bar component
 ├── lib/
-│   └── storage.ts       # AsyncStorage CRUD operations
+│   ├── storage.ts       # AsyncStorage CRUD operations (color, pinned fields)
+│   ├── settings.ts      # Settings context (dark mode, font size)
+│   └── timeUtils.ts     # Relative timestamp utility
 └── assets/              # App icons and splash screen
 ```
 

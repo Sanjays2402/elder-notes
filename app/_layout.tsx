@@ -1,21 +1,33 @@
 import { Stack } from "expo-router";
+import { SettingsProvider, useSettings } from "../lib/settings";
 
-export default function Layout() {
+function InnerLayout() {
+  const { theme } = useSettings();
+
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: "#4A90D9" },
-        headerTintColor: "#FFFFFF",
+        headerStyle: { backgroundColor: theme.headerBg },
+        headerTintColor: theme.headerText,
         headerTitleStyle: {
           fontSize: 24,
           fontWeight: "700",
         },
         headerBackTitleVisible: false,
-        contentStyle: { backgroundColor: "#F5F5F5" },
+        contentStyle: { backgroundColor: theme.bg },
       }}
     >
       <Stack.Screen name="index" options={{ title: "My Notes" }} />
       <Stack.Screen name="note" options={{ title: "Note" }} />
+      <Stack.Screen name="settings" options={{ title: "Settings" }} />
     </Stack>
+  );
+}
+
+export default function Layout() {
+  return (
+    <SettingsProvider>
+      <InnerLayout />
+    </SettingsProvider>
   );
 }
