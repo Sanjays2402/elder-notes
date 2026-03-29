@@ -12,6 +12,8 @@ import { Note, getAllNotes, searchNotes } from "../lib/storage";
 import NoteCard from "../components/NoteCard";
 import SearchBar from "../components/SearchBar";
 
+export { unstable_settings } from "expo-router";
+
 export default function HomeScreen() {
   const router = useRouter();
   const [notes, setNotes] = useState<Note[]>([]);

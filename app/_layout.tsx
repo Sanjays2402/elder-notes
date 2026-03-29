@@ -13,6 +13,9 @@ export default function Layout() {
         headerBackTitleVisible: false,
         contentStyle: { backgroundColor: "#F5F5F5" },
       }}
-    />
+    >
+      <Stack.Screen name="index" options={{ title: "My Notes" }} />
+      <Stack.Screen name="note" options={{ title: "Note" }} />
+    </Stack>
   );
 }
